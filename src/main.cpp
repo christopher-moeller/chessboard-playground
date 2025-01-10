@@ -7,6 +7,7 @@
 #include "backends/imgui_impl_opengl3.h"
 
 #include "Shader.h"
+#include "VertexBuffer.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -98,7 +99,25 @@ int initContext() {
 int main() {
     //return initContext();
     
-    Shader("rectangle-vert.glsl", "rectangle-frag.glsl");
+    //Shader("rectangle-vert.glsl", "rectangle-frag.glsl");
+    VertexBuffer vb;
+    
+    vb.SetVertices({
+        -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, // Bottom-left
+         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // Bottom-right
+        -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // Top-left
+         0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f // Top-right
+    });
+    
+    vb.SetIndices({
+        0, 1, 2, // First triangle
+        2, 1, 3  // Second triangle
+    });
+    
+    vb.AddAttributePointers(3, 6);
+    vb.AddAttributePointers(3, 6);
+    
+    vb.Apply();
     
     return 0;
 }
