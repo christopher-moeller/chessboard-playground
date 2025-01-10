@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <glm/gtc/type_ptr.hpp>
 
 
 Shader::Shader(std::string vertexShaderPath, std::string fragmentShaderPath) {
@@ -74,4 +75,9 @@ GLint Shader::CompileShader(const char *source, GLint shaderType) {
 
 void Shader::Use() {
     glUseProgram(this->m_ShaderProgram);
+}
+
+void Shader::SetUniform4Mat(const char *varName, glm::mat4 mat) {
+    int varPos = glGetUniformLocation(this->m_ShaderProgram, varName);
+    glUniformMatrix4fv(varPos, 1, GL_FALSE, glm::value_ptr(mat));
 }

@@ -63,3 +63,7 @@ void VertexBuffer::Apply() {
     delete[] indicesArray;
     delete[] verticesArray;
 }
+
+void VertexBuffer::Bind() {
+    glBindVertexArray(this->m_VAO);
+}

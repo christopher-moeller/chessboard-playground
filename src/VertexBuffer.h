@@ -30,6 +30,7 @@ public:
     void SetIndices(std::vector<unsigned int> indices);
     void AddAttributePointers(GLuint attributeSizePerVertex, GLuint vertextSize);
     void Apply();
+    void Bind();
 
 private:
     std::vector<float> m_Vertices;

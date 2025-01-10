@@ -8,9 +8,13 @@
 
 #include "Shader.h"
 #include "VertexBuffer.h"
+#include "Camera.h"
+
+Camera cam(800, 600);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
+    cam.UpdateWindowSize(width, height);
 }
 
 int initContext() {
@@ -24,10 +28,9 @@ int initContext() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     // Create a GLFW window
-    GLFWwindow* window = glfwCreateWindow(1500, 1000, "OpenGLApp", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGLApp", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -58,6 +61,25 @@ int initContext() {
     ImGui_ImplOpenGL3_Init("#version 330");
     
     int numberValue;
+    
+    Shader sh("rectangle-vert.glsl", "rectangle-frag.glsl");
+    VertexBuffer vb;
+    
+    vb.SetVertices({
+        -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, // Bottom-left
+         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // Bottom-right
+        -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // Top-left
+         0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f // Top-right
+    });
+    
+    vb.SetIndices({
+        0, 1, 2, // First triangle
+        2, 1, 3  // Second triangle
+    });
+    
+    vb.AddAttributePointers(3, 6);
+    vb.AddAttributePointers(3, 6);
+    vb.Apply();
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -79,6 +101,23 @@ int initContext() {
         
         
         glClear(GL_COLOR_BUFFER_BIT);
+        
+        {
+            sh.Use();
+            
+            glm::mat4 view = cam.GetViewMatrix();
+            glm::mat4 projection = cam.GetProjectionMatrix();
+            
+            glm::mat4 model = glm::mat4(1.0f);
+            //model = glm::rotate(model, glm::degrees(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+            
+            sh.SetUniform4Mat("model", model);
+            sh.SetUniform4Mat("view", view);
+            sh.SetUniform4Mat("projection", projection);
+            
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            
+        }
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(window);
@@ -97,9 +136,10 @@ int initContext() {
 }
 
 int main() {
-    //return initContext();
+    return initContext();
     
-    //Shader("rectangle-vert.glsl", "rectangle-frag.glsl");
+    /*
+    Shader("rectangle-vert.glsl", "rectangle-frag.glsl");
     VertexBuffer vb;
     
     vb.SetVertices({
@@ -120,4 +160,5 @@ int main() {
     vb.Apply();
     
     return 0;
+     */
 }
