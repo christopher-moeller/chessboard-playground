@@ -1,9 +1,9 @@
 -- premake5.lua
-workspace "OpenGLApp"
+workspace "ChessboardPlayground"
     configurations { "Debug", "Release" }
     platforms { "x64" }
 
-project "OpenGLApp"
+project "ChessboardPlayground"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"

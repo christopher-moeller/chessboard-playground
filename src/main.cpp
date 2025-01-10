@@ -23,7 +23,7 @@ int main() {
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     // Create a GLFW window
-    GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGLApp", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1500, 1000, "OpenGLApp", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -52,11 +52,12 @@ int main() {
     // Initialize ImGui backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
+    
+    int numberValue;
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
         
         // Start ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -66,10 +67,13 @@ int main() {
         // Example ImGui window
         ImGui::Begin("Hello, ImGui!");
         ImGui::Text("This is a sample ImGui window.");
+        ImGui::SliderInt("Number Value", &numberValue, 2, 20);
         ImGui::End();
 
         // Render ImGui
         ImGui::Render();
+        
+        
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
