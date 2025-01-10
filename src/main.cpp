@@ -6,11 +6,14 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
+#include "Shader.h"
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-int main() {
+int initContext() {
+
     // Initialize GLFW
     if (!glfwInit()) {
         std::cerr << "Failed to initialize GLFW" << std::endl;
@@ -87,6 +90,15 @@ int main() {
     ImGui::DestroyContext();
     glfwDestroyWindow(window);
     glfwTerminate();
+    
+    return 0;
+
+}
+
+int main() {
+    //return initContext();
+    
+    Shader("rectangle-vert.glsl", "rectangle-frag.glsl");
     
     return 0;
 }

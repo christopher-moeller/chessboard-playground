@@ -10,14 +10,15 @@ project "ChessboardPlayground"
     targetdir "bin/%{cfg.buildcfg}"
     objdir "bin-int/%{cfg.buildcfg}"
 
-    files { "src/**.h", "src/**.cpp" }
+    files { "src/**.h", "src/**.cpp", "shaders/**.glsl" }
 
     includedirs { -- Path to GLFW and GLEW headers
         "vendor/GLFW/include",
         "vendor/GLEW/include",
         "vendor/GLM/include",
         "vendor/ImGui",              -- ImGui headers
-        "vendor/ImGui/backends"      -- ImGui backends
+        "vendor/ImGui/backends",     -- ImGui backends
+        "shaders"
     }
 
     externalincludedirs { "vendor/GLFW/include", "vendor/GLEW/include", "vendor/GLM/include"  } -- This is needed for XCode
@@ -25,7 +26,8 @@ project "ChessboardPlayground"
     libdirs { -- Path to GLFW libraries
         "vendor/GLFW/lib",
         "vendor/GLEW/lib",
-        "vendor/GLM/lib"
+        "vendor/GLM/lib",
+        "shaders"
     }
 
     -- Link GLFW and macOS system frameworks
