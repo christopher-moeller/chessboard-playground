@@ -8,7 +8,7 @@ Chessboard::~Chessboard()
 {
 }
 
-void Chessboard::UpdateDimentions(unsigned int x, unsigned int y) {
+void Chessboard::UpdateDimensions(unsigned int x, unsigned int y) {
     this->m_X = x;
     this->m_Y = y;
 }

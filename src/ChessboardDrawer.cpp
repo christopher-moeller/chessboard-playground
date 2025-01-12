@@ -90,7 +90,7 @@ void ChessboardDrawer::Draw(Camera* camera) {
     this->m_Shader->SetUniform4Mat("projection", projection);
     
     glm::mat4 model = glm::mat4(1.0f);
-    //model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     this->m_Shader->SetUniform4Mat("model", model);
     
     glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(this->m_VertexBuffer.GetIndicesCount()), GL_UNSIGNED_INT, 0);

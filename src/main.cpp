@@ -6,19 +6,16 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
-#include "Shader.h"
-#include "VertexBuffer.h"
-#include "Camera.h"
+#include "Controller.h"
 
-#include "Chessboard.h"
-#include "ChessboardDrawer.h"
-
-Camera cam(800, 600);
+Controller controller;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
-    cam.UpdateWindowSize(width, height);
+    controller.UpdateWindowSize(width, height);
 }
+
+void ProcessInput(GLFWwindow* window, float deltaTime);
 
 int initContext() {
 
@@ -63,34 +60,20 @@ int initContext() {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
     
-    int chessboardX = 4;
-    int chessboardY = 4;
+    controller.SetupChessboard();
     
-    Shader sh("rectangle-vert.glsl", "rectangle-frag.glsl");
-    VertexBuffer vb;
+    int chessboardX = controller.GetChessboard()->GetX();
+    int chessboardY = controller.GetChessboard()->GetY();
     
-    vb.SetVertices({
-        -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, // Bottom-left
-         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // Bottom-right
-        -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // Top-left
-         0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f // Top-right
-    });
-    
-    vb.SetIndices({
-        0, 1, 2, // First triangle
-        2, 1, 3  // Second triangle
-    });
-    
-    vb.AddAttributePointers(3, 6);
-    vb.AddAttributePointers(3, 6);
-    vb.Apply();
-    
-    Chessboard chessboard;
-    ChessboardDrawer chessboardDrawer(&chessboard);
-    chessboardDrawer.Setup();
+    float deltaTime = 0.0f;    // time between current frame and last frame
+    float lastFrame = 0.0f;
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
+        float currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+        
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         
         // Start ImGui frame
@@ -112,14 +95,15 @@ int initContext() {
         ImGui::Render();
         
         if(oldX != chessboardX || oldY != chessboardY) {
-            chessboard.UpdateDimentions(chessboardX, chessboardY);
-            chessboardDrawer.Setup();
+            controller.UpdateChessboardDimensions(chessboardX, chessboardY);
+            controller.SetupChessboard();
         }
         
         
         glClear(GL_COLOR_BUFFER_BIT);
+        controller.DrawElements();
+        ProcessInput(window, deltaTime);
         
-        chessboardDrawer.Draw(&cam);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(window);
@@ -127,7 +111,6 @@ int initContext() {
     }
     
     // Cleanup
-    chessboardDrawer.CleanUp();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
@@ -140,28 +123,27 @@ int initContext() {
 
 int main() {
     return initContext();
+}
+
+void ProcessInput(GLFWwindow* window, float deltaTime) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+        return;
+    }
     
-    /*
-    Shader("rectangle-vert.glsl", "rectangle-frag.glsl");
-    VertexBuffer vb;
+    if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        controller.ProcessInput(PRESSED_UP, deltaTime);
+    }
     
-    vb.SetVertices({
-        -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, // Bottom-left
-         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // Bottom-right
-        -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // Top-left
-         0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f // Top-right
-    });
+    if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        controller.ProcessInput(PRESSED_DOWN, deltaTime);
+    }
     
-    vb.SetIndices({
-        0, 1, 2, // First triangle
-        2, 1, 3  // Second triangle
-    });
+    if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        controller.ProcessInput(PRESSED_LEFT, deltaTime);
+    }
     
-    vb.AddAttributePointers(3, 6);
-    vb.AddAttributePointers(3, 6);
-    
-    vb.Apply();
-    
-    return 0;
-     */
+    if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        controller.ProcessInput(PRESSED_RIGHT, deltaTime);
+    }
 }
