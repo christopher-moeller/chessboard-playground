@@ -31,6 +31,7 @@ public:
     void AddAttributePointers(GLuint attributeSizePerVertex, GLuint vertextSize);
     void Apply();
     void Bind();
+    size_t GetIndicesCount() const;
 
 private:
     std::vector<float> m_Vertices;

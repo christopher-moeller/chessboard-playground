@@ -67,3 +67,7 @@ void VertexBuffer::Apply() {
 void VertexBuffer::Bind() {
     glBindVertexArray(this->m_VAO);
 }
+
+size_t VertexBuffer::GetIndicesCount() const {
+    return this->m_Indices.size();
+};

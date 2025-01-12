@@ -10,6 +10,9 @@
 #include "VertexBuffer.h"
 #include "Camera.h"
 
+#include "Chessboard.h"
+#include "ChessboardDrawer.h"
+
 Camera cam(800, 600);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -60,7 +63,8 @@ int initContext() {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
     
-    int numberValue;
+    int chessboardX = 4;
+    int chessboardY = 4;
     
     Shader sh("rectangle-vert.glsl", "rectangle-frag.glsl");
     VertexBuffer vb;
@@ -80,6 +84,10 @@ int initContext() {
     vb.AddAttributePointers(3, 6);
     vb.AddAttributePointers(3, 6);
     vb.Apply();
+    
+    Chessboard chessboard;
+    ChessboardDrawer chessboardDrawer(&chessboard);
+    chessboardDrawer.Setup();
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -91,33 +99,27 @@ int initContext() {
         ImGui::NewFrame();
 
         // Example ImGui window
-        ImGui::Begin("Hello, ImGui!");
-        ImGui::Text("This is a sample ImGui window.");
-        ImGui::SliderInt("Number Value", &numberValue, 2, 20);
+        ImGui::Begin("Chessboard");
+        ImGui::Text("Dimentions");
+        
+        int oldX = chessboardX;
+        int oldY = chessboardY;
+        ImGui::SliderInt("X", &chessboardX, 2, 20);
+        ImGui::SliderInt("Y", &chessboardY, 2, 20);
         ImGui::End();
 
         // Render ImGui
         ImGui::Render();
         
+        if(oldX != chessboardX || oldY != chessboardY) {
+            chessboard.UpdateDimentions(chessboardX, chessboardY);
+            chessboardDrawer.Setup();
+        }
+        
         
         glClear(GL_COLOR_BUFFER_BIT);
         
-        {
-            sh.Use();
-            
-            glm::mat4 view = cam.GetViewMatrix();
-            glm::mat4 projection = cam.GetProjectionMatrix();
-            
-            glm::mat4 model = glm::mat4(1.0f);
-            //model = glm::rotate(model, glm::degrees(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            
-            sh.SetUniform4Mat("model", model);
-            sh.SetUniform4Mat("view", view);
-            sh.SetUniform4Mat("projection", projection);
-            
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-            
-        }
+        chessboardDrawer.Draw(&cam);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(window);
@@ -125,6 +127,7 @@ int initContext() {
     }
     
     // Cleanup
+    chessboardDrawer.CleanUp();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

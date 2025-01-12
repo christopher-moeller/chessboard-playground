@@ -4,6 +4,8 @@
 #include <sstream>
 #include <glm/gtc/type_ptr.hpp>
 
+#define LOG_SHADER_INIT false
+
 
 Shader::Shader(std::string vertexShaderPath, std::string fragmentShaderPath) {
     
@@ -49,8 +51,11 @@ std::string Shader::LoadShaderSource(std::string filepath) {
     buffer << file.rdbuf();
     std::string shaderContent = buffer.str();
     
-    std::cout << "Shader '" << fullpath << "' successfully loaded: " << std::endl;
-    std::cout << shaderContent << std::endl;
+    if(LOG_SHADER_INIT) {
+        std::cout << "Shader '" << fullpath << "' successfully loaded: " << std::endl;
+        std::cout << shaderContent << std::endl;
+    }
+
     
     return shaderContent;
 }
